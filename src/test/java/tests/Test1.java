@@ -1,5 +1,5 @@
 package tests;
-
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -9,7 +9,8 @@ import javax.xml.xpath.XPath;
 
 public class Test1 {
     public static void main(String[] args) {
-        System.setProperty("chromeDriver","/drivers/chromedriver");
+        //System.setProperty("chromeDriver","/drivers/chromedriver"); pom xml iile ayarladımbuna gerek yok
+        WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver(); // driver objesi
 
 
