@@ -12,13 +12,7 @@ public class Test1 {
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
-
-
-        // Text Box testini çalıştır
-        //textBoxTest(driver);
-
-        // Checkbox testini çalıştır
-        checkboxTest(driver);
+        RadioButtonTest(driver);
     }
 
     // 🧩 1. TextBox Testi
@@ -42,7 +36,6 @@ public class Test1 {
         System.out.println(driver.findElement(By.id("name")).getText());
         System.out.println(driver.findElement(By.id("email")).getText());
     }
-
     // 🧩 2. Checkbox Testi
     public static void checkboxTest(WebDriver driver) {
         driver.get("https://demoqa.com/checkbox");
@@ -65,6 +58,74 @@ public class Test1 {
         else{
             System.out.println("Checkbox is not checked");
         }
+
+    }
+    //isEnabled
+    public static void formCheckboxTest(WebDriver driver) {
+        driver.get("https://demoqa.com/automation-practice-form");
+
+        //isAEnabled kontrolü
+        WebElement sportCheckbox = driver.findElement(By.id("hobbies-checkbox-1"));
+        boolean isEnabledCheck = sportCheckbox.isEnabled(); // true ya da false döner. boolen değerdir. checkboz'ın tıklanır olup oladığını kontrol eder.
+
+        WebElement SportsCheckboxLabel = driver.findElement(By.xpath("//label[@for='hobbies-checkbox-1']"));
+
+        if(isEnabledCheck) {
+        try {
+            sportCheckbox.click();
+            }catch (Exception e) {
+            SportsCheckboxLabel.click();
+            System.out.println("Entered catch block");
+            }
+        }
+        boolean isSelectedCheck = sportCheckbox.isSelected();
+        System.out.println("isSelectted");
+
+
+    }
+    //RadioButton
+    public static void RadioButtonTest(WebDriver driver) {
+        driver.get("https://demoqa.com/radio-button");
+
+        //enabled -disabled
+        // şeçili seçili değil mi
+        WebElement yesRadioButton = driver.findElement(By.xpath("//label[@for='yesRadio']"));
+        //tıklanır mı değil mi buton
+        boolean isEnabled = yesRadioButton.isEnabled();
+        if(isEnabled){
+            yesRadioButton.click();
+            System.out.println("Radio button is enabled");
+        }
+        else{
+            System.out.println("Radio button is not enabled");
+        }
+
+
+
+
+        //getText() method
+        WebElement yesRadioText= driver.findElement(By.xpath("//p[@class='mt-3']"));
+        System.out.println(yesRadioText.getText());
+
+
+        // tıklanır olmayan radio butonun kontrolü
+        WebElement noRadioBtn = driver.findElement(By.xpath("//input[@id='noRadio']"));
+
+        if(noRadioBtn.isEnabled()){
+            noRadioBtn.click();
+            System.out.println("Radio button is enabled and clicked");
+        } else {
+            System.out.println("Radio button is NOT enabled");
+        }
+
+
+
+
+        //label[@for='noRadio']
+
+
+
+
 
     }
 }
