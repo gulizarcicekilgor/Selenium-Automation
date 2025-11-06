@@ -118,6 +118,9 @@ public class Test1 {
             System.out.println("Radio button is not enabled");
         }
 
+        //branch açma / maini stabil tutma
+        System.out.println("main update");
+
 
 
 
