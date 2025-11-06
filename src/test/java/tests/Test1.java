@@ -115,7 +115,7 @@ public class Test1 {
             noRadioBtn.click();
             System.out.println("Radio button is enabled and clicked");
         } else {
-            System.out.println("Radio button is NOT enabled");
+            System.out.println("Radio button is not enabled");
         }
 
 
