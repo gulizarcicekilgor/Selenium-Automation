@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 
 public class Test1 {
 
@@ -12,7 +13,7 @@ public class Test1 {
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
-        RadioButtonTest(driver);
+        ClickTests(driver);
     }
 
     // 🧩 1. TextBox Testi
@@ -124,11 +125,33 @@ public class Test1 {
 
 
 
+
         //label[@for='noRadio']
 
 
 
 
+
+    }
+
+    public static void ClickTests(WebDriver driver){
+        driver.get("https://demoqa.com/buttons");
+        WebElement doubleBtn = driver.findElement(By.xpath("//button[@id='doubleClickBtn']"));
+        // doubleclick için action class'ından yararlanmak gerekiyor
+        Actions actions = new Actions(driver);
+        actions.doubleClick(doubleBtn).perform();
+
+        WebElement getMessageDouble= driver.findElement(By.xpath("//p[@id='doubleClickMessage']"));
+        String messageDouble = getMessageDouble.getText();
+        System.out.println(messageDouble);
+
+        WebElement rightBtn = driver.findElement(By.xpath("//button[@id='rightClickBtn']"));
+        // doubleclick için action class'ından yararlanmak gerekiyor
+        actions.contextClick(rightBtn).perform();
+
+        WebElement getMessageRight= driver.findElement(By.xpath("//p[@id='rightClickMessage']"));
+        String messageRight = getMessageRight.getText();
+        System.out.println(messageRight);
 
     }
 }
