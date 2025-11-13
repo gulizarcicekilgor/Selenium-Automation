@@ -6,6 +6,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class Test1 {
 
@@ -13,7 +18,7 @@ public class Test1 {
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
-        ClickTests(driver);
+        DynamicPropertiesTests(driver);
     }
 
     // 🧩 1. TextBox Testi
@@ -156,4 +161,38 @@ public class Test1 {
         WebElement dymnmicBtn= driver.findElement(By.xpath("//button[text()='Click Me']"));
         dymnmicBtn.click();
     }
+    public static void DynamicPropertiesTests(WebDriver driver)
+    {
+        driver.get("https://demoqa.com/dynamic-properties");
+        //dynamic id olduğundan Xpath ile elemet locate ediyoruz
+        WebElement dynamicID = driver.findElement(By.xpath("//div/p"));
+        String textdynamicID= dynamicID.getText();
+        System.out.println("textdynamicIDText: "+textdynamicID);
+
+
+        //5 saniye sonra enable olan buton için (buton hep visible)
+        WebElement enableAfterButton = driver.findElement(By.xpath("//button[@id='enableAfter']"));
+        // Explicit Wait: max 7 saniye bekle, selenium her saniye kontrol eder. bu sadece üst sınır
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(7));
+        // Butonun tıklanır olduğu an işlemi yap
+        wait.until(ExpectedConditions.elementToBeClickable(enableAfterButton));
+        enableAfterButton.click();
+
+
+
+
+        WebElement colorChangeButton = driver.findElement(By.id("colorChange"));
+        String colorClassName = colorChangeButton.getAttribute("class");
+        System.out.println("BeforecolorClass: "+ colorClassName);    // BEfore className i yukardaki wait işlemlerinin üstüne taşıyıp çalıştır.
+        wait.until(ExpectedConditions.attributeToBe(colorChangeButton, "class", "mt-4 text-danger btn btn-primary"));
+        colorClassName = colorChangeButton.getAttribute("class");
+        System.out.println("AftercolorClass: "+ colorClassName);
+
+
+
+
+
+
+    }
+
 }
