@@ -146,12 +146,14 @@ public class Test1 {
         System.out.println(messageDouble);
 
         WebElement rightBtn = driver.findElement(By.xpath("//button[@id='rightClickBtn']"));
-        // doubleclick için action class'ından yararlanmak gerekiyor
+        // contextClick(right click için action class'ından yararlanmak gerekiyor
         actions.contextClick(rightBtn).perform();
 
         WebElement getMessageRight= driver.findElement(By.xpath("//p[@id='rightClickMessage']"));
         String messageRight = getMessageRight.getText();
         System.out.println(messageRight);
 
+        WebElement dymnmicBtn= driver.findElement(By.xpath("//button[text()='Click Me']"));
+        dymnmicBtn.click();
     }
 }
