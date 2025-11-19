@@ -1,15 +1,15 @@
 package tests;
-
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.Duration;
 
 public class Test1 {
@@ -18,7 +18,7 @@ public class Test1 {
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
-        DynamicPropertiesTests(driver);
+        BrokenLinkTest2(driver);
     }
 
     // 🧩 1. TextBox Testi
@@ -163,8 +163,9 @@ public class Test1 {
     }
     public static void DynamicPropertiesTests(WebDriver driver)
     {
+        // bu fonksiyonda yapılan buton kontrolleri için en başında yapılan wait işlemi dikkate alınmalı
         driver.get("https://demoqa.com/dynamic-properties");
-        //dynamic id olduğundan Xpath ile elemet locate ediyoruz
+       //dynamic id olduğundan Xpath ile elemet locate ediyoruz
         WebElement dynamicID = driver.findElement(By.xpath("//div/p"));
         String textdynamicID= dynamicID.getText();
         System.out.println("textdynamicIDText: "+textdynamicID);
@@ -179,8 +180,7 @@ public class Test1 {
         enableAfterButton.click();
 
 
-
-
+        //5 saniye sonra class name değişiyor
         WebElement colorChangeButton = driver.findElement(By.id("colorChange"));
         String colorClassName = colorChangeButton.getAttribute("class");
         System.out.println("BeforecolorClass: "+ colorClassName);    // BEfore className i yukardaki wait işlemlerinin üstüne taşıyıp çalıştır.
@@ -188,8 +188,81 @@ public class Test1 {
         colorClassName = colorChangeButton.getAttribute("class");
         System.out.println("AftercolorClass: "+ colorClassName);
 
+        // 5 sn sonra görünür olan buton için
+        WebDriverWait wait3 =new WebDriverWait(driver, Duration.ofSeconds(7));
+        wait3.until(ExpectedConditions.visibilityOfElementLocated(By.id("visibleAfter")));
+        driver.findElement(By.id("visibleAfter")).click();
 
 
+
+    }
+    public  static void BrokenLinkTest(WebDriver driver) {
+        driver.get("https://demoqa.com/broken");
+            for(WebElement linkElement : driver.findElements(By.tagName("a")))
+            {
+                String href = linkElement.getAttribute("href");
+                System.out.println("konrol edilen: "+href);
+                if(href==null || href.isEmpty()){
+                    System.out.println(" → Geçersiz link (href yok)");
+                    continue;
+                }
+                try {
+                    HttpURLConnection urlConnection = (HttpURLConnection) new URL(href).openConnection();
+                    urlConnection.connect();
+                    int statusCode = urlConnection.getResponseCode();
+                    if(statusCode>=400){
+                        System.out.println("Broken link: "+statusCode);
+
+                    }
+                    else {
+                        System.out.println("Valid link: "+statusCode);
+
+                    }
+
+                } catch (Exception e) {
+                    System.out.println("Hata" + e.getMessage());
+                }
+            }
+    }
+    public  static void BrokenLinkTest2(WebDriver driver) {
+        driver.get("https://demoqa.com/broken");
+        try {
+            // VALID link
+            String validUrl = driver.findElement(By.linkText("Click Here for Valid Link")).getAttribute("href");
+            HttpURLConnection c1 = (HttpURLConnection) new URL(validUrl).openConnection();
+            c1.connect();
+            System.out.println(" valid link → " + validUrl + " → Kod: " + c1.getResponseCode());
+
+
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        try {
+            String brokenUrl =driver.findElement(By.linkText("Click Here for Broken Link")).getAttribute("href");
+            HttpURLConnection c2 = (HttpURLConnection) new URL(brokenUrl).openConnection();
+            c2.connect();
+            System.out.println(" broken link → " + brokenUrl + " → Kod: " + c2.getResponseCode());
+        }catch (Exception e){
+            e.getMessage();}
+
+
+
+    }
+    public  static void BrokenLinkImage(WebDriver driver) {
+
+        driver.get("https://demoqa.com/broken");
+            // image elementini buluyorum
+        WebElement image = driver.findElement(By.xpath("//img[@src='/images/Toolsqa_1.jpg']"));
+        //Driver'ı JavaStript çalıştırabilir hale getirdim
+        JavascriptExecutor js = (JavascriptExecutor)  driver;
+
+        // ardından JavaScript ile resmin width height değlerlerine bakıyorum.(0 a eşitlerse resim broken
+
+        Boolean imageDisplayed = (Boolean) js.executeScript("return arguments[0].naturalWidth>0 && arguments[0].naturalHeight>0;", image);
+            if (imageDisplayed){
+                System.out.println("imageDisplayed is not broken");}
+            else {
+                System.out.println("imageDisplayed is broken");}
 
 
 
