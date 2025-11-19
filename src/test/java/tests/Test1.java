@@ -1,5 +1,4 @@
 package tests;
-
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -19,7 +18,7 @@ public class Test1 {
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
-        BrokenLinkImage(driver);
+        BrokenLinkTest2(driver);
     }
 
     // 🧩 1. TextBox Testi
@@ -196,27 +195,55 @@ public class Test1 {
 
 
 
-
-
-
-
     }
     public  static void BrokenLinkTest(WebDriver driver) {
+        driver.get("https://demoqa.com/broken");
+            for(WebElement linkElement : driver.findElements(By.tagName("a")))
+            {
+                String href = linkElement.getAttribute("href");
+                System.out.println("konrol edilen: "+href);
+                if(href==null || href.isEmpty()){
+                    System.out.println(" → Geçersiz link (href yok)");
+                    continue;
+                }
+                try {
+                    HttpURLConnection urlConnection = (HttpURLConnection) new URL(href).openConnection();
+                    urlConnection.connect();
+                    int statusCode = urlConnection.getResponseCode();
+                    if(statusCode>=400){
+                        System.out.println("Broken link: "+statusCode);
 
+                    }
+                    else {
+                        System.out.println("Valid link: "+statusCode);
+
+                    }
+
+                } catch (Exception e) {
+                    System.out.println("Hata" + e.getMessage());
+                }
+            }
+    }
+    public  static void BrokenLinkTest2(WebDriver driver) {
+        driver.get("https://demoqa.com/broken");
         try {
-            driver.get("https://demoqa.com/broken");
-            //200 lü link
-            //URL url = new URL("https://demoqa.com/");
-            // 500 lü link
-            URL urlbroken = new URL("https://the-internet.herokuapp.com/status_codes/500");
-            HttpURLConnection connection = (HttpURLConnection) urlbroken.openConnection();
-            connection.setRequestMethod("GET");
-            int statusCode = connection.getResponseCode();
-            System.out.println("HTTP Status Code: " + statusCode);
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+            // VALID link
+            String validUrl = driver.findElement(By.linkText("Click Here for Valid Link")).getAttribute("href");
+            HttpURLConnection c1 = (HttpURLConnection) new URL(validUrl).openConnection();
+            c1.connect();
+            System.out.println(" valid link → " + validUrl + " → Kod: " + c1.getResponseCode());
 
+
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        try {
+            String brokenUrl =driver.findElement(By.linkText("Click Here for Broken Link")).getAttribute("href");
+            HttpURLConnection c2 = (HttpURLConnection) new URL(brokenUrl).openConnection();
+            c2.connect();
+            System.out.println(" broken link → " + brokenUrl + " → Kod: " + c2.getResponseCode());
+        }catch (Exception e){
+            e.getMessage();}
 
 
 
