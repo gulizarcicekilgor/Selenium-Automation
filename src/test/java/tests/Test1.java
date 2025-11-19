@@ -8,17 +8,19 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.Duration;
 
 public class Test1 {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
-        BrokenLinkTest2(driver);
+        DownloadFileTest(driver);
     }
 
     // 🧩 1. TextBox Testi
@@ -196,7 +198,7 @@ public class Test1 {
 
 
     }
-    public  static void BrokenLinkTest(WebDriver driver) {
+    public static void BrokenLinkTest(WebDriver driver) {
         driver.get("https://demoqa.com/broken");
             for(WebElement linkElement : driver.findElements(By.tagName("a")))
             {
@@ -224,7 +226,7 @@ public class Test1 {
                 }
             }
     }
-    public  static void BrokenLinkTest2(WebDriver driver) {
+    public static void BrokenLinkTest2(WebDriver driver) {
         driver.get("https://demoqa.com/broken");
         try {
             // VALID link
@@ -248,7 +250,7 @@ public class Test1 {
 
 
     }
-    public  static void BrokenLinkImage(WebDriver driver) {
+    public static void BrokenLinkImage(WebDriver driver) {
 
         driver.get("https://demoqa.com/broken");
             // image elementini buluyorum
@@ -264,6 +266,38 @@ public class Test1 {
             else {
                 System.out.println("imageDisplayed is broken");}
 
+
+
+    }
+    public static  void DownloadFileTest(WebDriver driver) throws InterruptedException {
+        driver.get("https://demoqa.com/upload-download");
+        WebElement downloadButton=driver.findElement(By.id("downloadButton"));
+        downloadButton.click();
+
+        String folderpath = "C:/Users/guliz/Downloads/";
+        String fileName= "sampleFile.jpeg";
+
+        Thread.sleep(10000);
+
+        File file = new File(folderpath);
+        File[] files = file.listFiles();
+
+        boolean foundFile = false;
+        for (int j = 0; j < files.length; j++) {
+            if (files[j].getName().equals(fileName)) {
+                files[j].delete(); // normalde file.delete yapmıştın ve dosyayı sildirememiştin. önemli nokta!!!
+                System.out.println("file found");
+                foundFile = true;
+
+                break;
+
+            }
+        }
+        if(!foundFile)
+        {
+                System.out.println("file does not exist");
+
+        }
 
 
     }
