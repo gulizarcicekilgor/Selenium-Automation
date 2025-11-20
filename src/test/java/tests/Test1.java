@@ -20,7 +20,7 @@ public class Test1 {
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
-        DownloadFileTest(driver);
+        UploadFileTest(driver);
     }
 
     // 🧩 1. TextBox Testi
@@ -301,5 +301,16 @@ public class Test1 {
 
 
     }
+    public static void UploadFileTest(WebDriver driver)
+    {
+        driver.get("https://demoqa.com/upload-download");
+        WebElement uploadButton=driver.findElement(By.id("uploadFile"));
+        uploadButton.sendKeys("C:/Users/guliz/OneDrive/Masaüstü/test.png");
+
+        // Yükleme yapıldığını doğrulamak için çıktı mesajını al
+        WebElement uploadFilePath = driver.findElement(By.id("uploadedFilePath"));
+        System.out.println(uploadFilePath.getText());
+    }
+
 
 }
