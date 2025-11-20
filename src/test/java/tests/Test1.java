@@ -13,6 +13,9 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Test1 {
 
@@ -20,7 +23,7 @@ public class Test1 {
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
-        UploadFileTest(driver);
+        TabTests(driver);
     }
 
     // 🧩 1. TextBox Testi
@@ -311,6 +314,28 @@ public class Test1 {
         WebElement uploadFilePath = driver.findElement(By.id("uploadedFilePath"));
         System.out.println(uploadFilePath.getText());
     }
+    public  static void TabTests(WebDriver driver) throws InterruptedException {
+        driver.get("https://demoqa.com/browser-windows");
+        WebElement newTabBtn = driver.findElement(By.xpath("//button[@id='tabButton']"));
+        //new window ve new tab tamamen aynı şekilde işliyor.
+       // WebElement newWindowBtn = driver.findElement(By.xpath("//button[@id='windowButton']"))
+        newTabBtn.click();
+        //Açılan tabları bir listeye attık. getWindowHandles() Set döner. onu aray liste çevirdik.
+        List<String> tabs = new ArrayList<>(driver.getWindowHandles());
+        System.out.println(tabs.size());
+        //switchTo() başka taba geçmemize yarar
+        driver.switchTo().window(tabs.get(1));
+        System.out.println(driver.getCurrentUrl());
+        Thread.sleep(2000);
+        driver.close();
+
+
+
+
+
+        //  https://demoqa.com/sample
+    }
+
 
 
 }
