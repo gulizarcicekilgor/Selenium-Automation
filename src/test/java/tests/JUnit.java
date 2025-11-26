@@ -1,5 +1,7 @@
 package tests;
+
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.*; // 🔴 JUnit
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -11,67 +13,51 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class Test1 {
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class JUnit {
 
-    public static void main(String[] args) throws InterruptedException {
+    static WebDriver driver; // 🔴 static, @BeforeAll ve @AfterAll için
+
+    @BeforeAll
+    public static void setUp() {
         WebDriverManager.chromedriver().setup();
-        WebDriver driver = new ChromeDriver();
+        driver = new ChromeDriver();
         driver.manage().window().maximize();
-        AlertTests(driver);
     }
 
-    // 🧩 1. TextBox Testi
-    public static void textBoxTest(WebDriver driver) {
+    @AfterAll
+    public static void tearDown() {
+        if(driver != null) driver.quit();
+    }
+
+    @Test
+    @Order(1)
+    public void textBoxTest() {
         driver.get("https://demoqa.com/text-box");
-        WebElement username = driver.findElement(By.id("userName"));
-        username.sendKeys("Gülizar");
-
-        WebElement userEmail = driver.findElement(By.cssSelector("input#userEmail"));
-        userEmail.sendKeys("gulizarciek@gmail.com");
-
-        WebElement currentAddress = driver.findElement(By.cssSelector("textarea#currentAddress"));
-        currentAddress.sendKeys("İzmir Buca");
-
-        WebElement permanentAddress = driver.findElement(By.id("permanentAddress"));
-        permanentAddress.sendKeys("Yozgat Merkez");
-
-        WebElement submitBtn = driver.findElement(By.xpath("//button[@id='submit']"));
-        submitBtn.click();
-
+        driver.findElement(By.id("userName")).sendKeys("Gülizar");
+        driver.findElement(By.id("userEmail")).sendKeys("gulizarciek@gmail.com");
+        driver.findElement(By.id("currentAddress")).sendKeys("İzmir Buca");
+        driver.findElement(By.id("permanentAddress")).sendKeys("Yozgat Merkez");
+        driver.findElement(By.id("submit")).click();
         System.out.println(driver.findElement(By.id("name")).getText());
-        System.out.println(driver.findElement(By.id("email")).getText());
     }
-    // 🧩 2. Checkbox Testi
-    public static void checkboxTest(WebDriver driver) {
+
+    @Test
+    @Order(2)
+    public void checkboxTest() {
         driver.get("https://demoqa.com/checkbox");
-
-        // Checkbox sayfasındaki ana checkbox'ı bul ve tıkla
-
-        String homeCheckBoxCssValue = "label[for='tree-node-home'] span.rct-checkbox svg";
-        WebElement homeCheckbox = driver.findElement(new By.ByCssSelector(homeCheckBoxCssValue));
+        WebElement homeCheckbox = driver.findElement(By.cssSelector("label[for='tree-node-home'] span.rct-checkbox svg"));
         homeCheckbox.click();
-
-        homeCheckbox = driver.findElement(new By.ByCssSelector(homeCheckBoxCssValue));
-
-        //Checkbox’ın işaretli olup olmadığını HTML class değerine bakarak anlamak.
         String homeCheckboxClassName = homeCheckbox.getAttribute("class");
-
-        if (homeCheckboxClassName.equals("rct-icon rct-icon-check"))
-        {
-            System.out.println("Checkbox is checked");
-        }
-        else{
-            System.out.println("Checkbox is not checked");
-        }
-
+        System.out.println(homeCheckboxClassName.equals("rct-icon rct-icon-check") ? "Checked" : "Not checked");
     }
     //isEnabled
-    public static void formCheckboxTest(WebDriver driver) {
+    @Test
+    @Order(3)
+    public void formCheckboxTest() {
         driver.get("https://demoqa.com/automation-practice-form");
-
         //isAEnabled kontrolü
         WebElement sportCheckbox = driver.findElement(By.id("hobbies-checkbox-1"));
         boolean isEnabledCheck = sportCheckbox.isEnabled(); // true ya da false döner. boolen değerdir. checkboz'ın tıklanır olup oladığını kontrol eder.
@@ -79,20 +65,19 @@ public class Test1 {
         WebElement SportsCheckboxLabel = driver.findElement(By.xpath("//label[@for='hobbies-checkbox-1']"));
 
         if(isEnabledCheck) {
-        try {
-            sportCheckbox.click();
+            try {
+                sportCheckbox.click();
             }catch (Exception e) {
-            SportsCheckboxLabel.click();
-            System.out.println("Entered catch block");
+                SportsCheckboxLabel.click();
+                System.out.println("Entered catch block");
             }
         }
         boolean isSelectedCheck = sportCheckbox.isSelected();
         System.out.println("isSelectted");
-
-
     }
     //RadioButton
-    public static void RadioButtonTest(WebDriver driver) {
+    @Test
+    public void RadioButtonTest() {
         driver.get("https://demoqa.com/radio-button");
 
         //enabled -disabled
@@ -107,10 +92,6 @@ public class Test1 {
         else{
             System.out.println("Radio button is not enabled");
         }
-
-
-
-
         //getText() method
         WebElement yesRadioText= driver.findElement(By.xpath("//p[@class='mt-3']"));
         System.out.println(yesRadioText.getText());
@@ -129,19 +110,12 @@ public class Test1 {
         //branch açma / maini stabil tutma
         System.out.println("main update");
 
-
-
-
-
         //label[@for='noRadio']
 
 
-
-
-
     }
-
-    public static void ClickTests(WebDriver driver){
+    @Test
+    public void ClickTests(){
         driver.get("https://demoqa.com/buttons");
         WebElement doubleBtn = driver.findElement(By.xpath("//button[@id='doubleClickBtn']"));
         // doubleclick için action class'ından yararlanmak gerekiyor
@@ -163,11 +137,12 @@ public class Test1 {
         WebElement dymnmicBtn= driver.findElement(By.xpath("//button[text()='Click Me']"));
         dymnmicBtn.click();
     }
-    public static void DynamicPropertiesTests(WebDriver driver)
+    @Test
+    public void DynamicPropertiesTests()
     {
         // bu fonksiyonda yapılan buton kontrolleri için en başında yapılan wait işlemi dikkate alınmalı
         driver.get("https://demoqa.com/dynamic-properties");
-       //dynamic id olduğundan Xpath ile elemet locate ediyoruz
+        //dynamic id olduğundan Xpath ile elemet locate ediyoruz
         WebElement dynamicID = driver.findElement(By.xpath("//div/p"));
         String textdynamicID= dynamicID.getText();
         System.out.println("textdynamicIDText: "+textdynamicID);
@@ -198,35 +173,37 @@ public class Test1 {
 
 
     }
-    public static void BrokenLinkTest(WebDriver driver) {
+    @Test
+    public void BrokenLinkTest() {
         driver.get("https://demoqa.com/broken");
-            for(WebElement linkElement : driver.findElements(By.tagName("a")))
-            {
-                String href = linkElement.getAttribute("href");
-                System.out.println("konrol edilen: "+href);
-                if(href==null || href.isEmpty()){
-                    System.out.println(" → Geçersiz link (href yok)");
-                    continue;
-                }
-                try {
-                    HttpURLConnection urlConnection = (HttpURLConnection) new URL(href).openConnection();
-                    urlConnection.connect();
-                    int statusCode = urlConnection.getResponseCode();
-                    if(statusCode>=400){
-                        System.out.println("Broken link: "+statusCode);
-
-                    }
-                    else {
-                        System.out.println("Valid link: "+statusCode);
-
-                    }
-
-                } catch (Exception e) {
-                    System.out.println("Hata" + e.getMessage());
-                }
+        for(WebElement linkElement : driver.findElements(By.tagName("a")))
+        {
+            String href = linkElement.getAttribute("href");
+            System.out.println("konrol edilen: "+href);
+            if(href==null || href.isEmpty()){
+                System.out.println(" → Geçersiz link (href yok)");
+                continue;
             }
+            try {
+                HttpURLConnection urlConnection = (HttpURLConnection) new URL(href).openConnection();
+                urlConnection.connect();
+                int statusCode = urlConnection.getResponseCode();
+                if(statusCode>=400){
+                    System.out.println("Broken link: "+statusCode);
+
+                }
+                else {
+                    System.out.println("Valid link: "+statusCode);
+
+                }
+
+            } catch (Exception e) {
+                System.out.println("Hata" + e.getMessage());
+            }
+        }
     }
-    public static void BrokenLinkTest2(WebDriver driver) {
+    @Test
+    public void BrokenLinkTest2() {
         driver.get("https://demoqa.com/broken");
         try {
             // VALID link
@@ -250,10 +227,11 @@ public class Test1 {
 
 
     }
-    public static void BrokenLinkImage(WebDriver driver) {
+    @Test
+    public void BrokenLinkImage() {
 
         driver.get("https://demoqa.com/broken");
-            // image elementini buluyorum
+        // image elementini buluyorum
         WebElement image = driver.findElement(By.xpath("//img[@src='/images/Toolsqa_1.jpg']"));
         //Driver'ı JavaStript çalıştırabilir hale getirdim
         JavascriptExecutor js = (JavascriptExecutor)  driver;
@@ -261,15 +239,16 @@ public class Test1 {
         // ardından JavaScript ile resmin width height değlerlerine bakıyorum.(0 a eşitlerse resim broken
 
         Boolean imageDisplayed = (Boolean) js.executeScript("return arguments[0].naturalWidth>0 && arguments[0].naturalHeight>0;", image);
-            if (imageDisplayed){
-                System.out.println("imageDisplayed is not broken");}
-            else {
-                System.out.println("imageDisplayed is broken");}
+        if (imageDisplayed){
+            System.out.println("imageDisplayed is not broken");}
+        else {
+            System.out.println("imageDisplayed is broken");}
 
 
 
     }
-    public static  void DownloadFileTest(WebDriver driver) throws InterruptedException {
+    @Test
+    public void DownloadFileTest() throws InterruptedException {
         driver.get("https://demoqa.com/upload-download");
         WebElement downloadButton=driver.findElement(By.id("downloadButton"));
         downloadButton.click();
@@ -295,13 +274,14 @@ public class Test1 {
         }
         if(!foundFile)
         {
-                System.out.println("file does not exist");
+            System.out.println("file does not exist");
 
         }
 
 
     }
-    public static void UploadFileTest(WebDriver driver)
+    @Test
+    public void UploadFileTest()
     {
         driver.get("https://demoqa.com/upload-download");
         WebElement uploadButton=driver.findElement(By.id("uploadFile"));
@@ -311,11 +291,12 @@ public class Test1 {
         WebElement uploadFilePath = driver.findElement(By.id("uploadedFilePath"));
         System.out.println(uploadFilePath.getText());
     }
-    public  static void TabTests(WebDriver driver) throws InterruptedException {
+    @Test
+    public void TabTests() throws InterruptedException {
         driver.get("https://demoqa.com/browser-windows");
         WebElement newTabBtn = driver.findElement(By.xpath("//button[@id='tabButton']"));
         //new window ve new tab tamamen aynı şekilde işliyor.
-       // WebElement newWindowBtn = driver.findElement(By.xpath("//button[@id='windowButton']"))
+        // WebElement newWindowBtn = driver.findElement(By.xpath("//button[@id='windowButton']"))
         newTabBtn.click();
         //Açılan tabları bir listeye attık. getWindowHandles() Set döner. onu aray liste çevirdik.
         List<String> tabs = new ArrayList<>(driver.getWindowHandles());
@@ -328,61 +309,44 @@ public class Test1 {
 
         //  https://demoqa.com/sample
     }
+    @Test
+    public void tabTests() throws InterruptedException {
+        driver.get("https://demoqa.com/browser-windows");
+        driver.findElement(By.id("tabButton")).click();
+        List<String> tabs = new ArrayList<>(driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(1));
+        System.out.println(driver.getCurrentUrl());
+        driver.close();
+        driver.switchTo().window(tabs.get(0));
+    }
 
-    public static void AlertTests(WebDriver driver) {
+
+    @Test
+    @Order(3)
+    public void alertTests() {
         driver.get("https://demoqa.com/alerts");
-
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        try {
-            // 1️⃣ Normal Alert
-            System.out.println("=== Normal Alert Test ===");
-            driver.findElement(By.id("alertButton")).click();
+        driver.findElement(By.id("alertButton")).click();
+        wait.until(ExpectedConditions.alertIsPresent()).accept();
 
-            Alert alert1 = wait.until(ExpectedConditions.alertIsPresent());
-            System.out.println("Alert text: " + alert1.getText());
-            alert1.accept();
-            Thread.sleep(1000);
+        driver.findElement(By.id("timerAlertButton")).click();
+        wait.until(ExpectedConditions.alertIsPresent()).accept();
 
-            // 2️⃣ 5 saniye geciken alert
-            System.out.println("=== Timer Alert Test ===");
-            driver.findElement(By.id("timerAlertButton")).click();
-            // Bu satır, sayfa butona tıkladıktan sonra alert görünene kadar bekle anlamına gelir. 5 saniye beklemesi için yeniden wait kullanmaya gerek kalmıyor
-            Alert alert2 = wait.until(ExpectedConditions.alertIsPresent());
-            System.out.println("Timer alert text: " + alert2.getText());
-            alert2.accept();
-            Thread.sleep(1000);
+        driver.findElement(By.id("confirmButton")).click();
+        wait.until(ExpectedConditions.alertIsPresent()).dismiss();
 
-            // 3️⃣ Confirm (OK / Cancel)
-            System.out.println("=== Confirm Alert Test ===");
-            driver.findElement(By.id("confirmButton")).click();
-
-            Alert alert3 = wait.until(ExpectedConditions.alertIsPresent());
-            System.out.println("Confirm Alert text: " + alert3.getText());
-            alert3.dismiss();   // Cancel'a basmak için
-            System.out.println("Cancel seçildi");
-            Thread.sleep(1000);
-
-            // 4️⃣ Prompt Alert
-            System.out.println("=== Prompt Alert Test ===");
-            driver.findElement(By.id("promtButton")).click();
-
-            Alert alert4 = wait.until(ExpectedConditions.alertIsPresent());
-            System.out.println("Prompt text: " + alert4.getText());
-            alert4.sendKeys("Gili Test");
-            alert4.accept();
-            Thread.sleep(1000);
-
-        } catch (Exception e) {
-            System.out.println("Hata oluştu: " + e.getMessage());
-        }
+        driver.findElement(By.id("promtButton")).click();
+        Alert prompt = wait.until(ExpectedConditions.alertIsPresent());
+        prompt.sendKeys("JUnit Test");
+        prompt.accept();
     }
-    public static void Frames   (WebDriver driver) {
+    @Test
+    public void FrameTest() throws InterruptedException {
         driver.get("https://demoqa.com/frames");
 
     }
 
 
-
-
 }
+
