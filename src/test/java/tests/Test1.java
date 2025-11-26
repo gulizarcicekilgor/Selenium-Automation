@@ -1,9 +1,6 @@
 package tests;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -23,7 +20,7 @@ public class Test1 {
         WebDriverManager.chromedriver().setup();
         WebDriver driver = new ChromeDriver();
         driver.manage().window().maximize();
-        TabTests(driver);
+        AlertTests(driver);
     }
 
     // 🧩 1. TextBox Testi
@@ -329,12 +326,58 @@ public class Test1 {
         Thread.sleep(2000);
         driver.close();
 
-
-
-
-
         //  https://demoqa.com/sample
     }
+
+    public static void AlertTests(WebDriver driver) {
+        driver.get("https://demoqa.com/alerts");
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        try {
+            // 1️⃣ Normal Alert
+            System.out.println("=== Normal Alert Test ===");
+            driver.findElement(By.id("alertButton")).click();
+
+            Alert alert1 = wait.until(ExpectedConditions.alertIsPresent());
+            System.out.println("Alert text: " + alert1.getText());
+            alert1.accept();
+            Thread.sleep(1000);
+
+            // 2️⃣ 5 saniye geciken alert
+            System.out.println("=== Timer Alert Test ===");
+            driver.findElement(By.id("timerAlertButton")).click();
+            // Bu satır, sayfa butona tıkladıktan sonra alert görünene kadar bekle anlamına gelir. 5 saniye beklemesi için yeniden wait kullanmaya gerek kalmıyor
+            Alert alert2 = wait.until(ExpectedConditions.alertIsPresent());
+            System.out.println("Timer alert text: " + alert2.getText());
+            alert2.accept();
+            Thread.sleep(1000);
+
+            // 3️⃣ Confirm (OK / Cancel)
+            System.out.println("=== Confirm Alert Test ===");
+            driver.findElement(By.id("confirmButton")).click();
+
+            Alert alert3 = wait.until(ExpectedConditions.alertIsPresent());
+            System.out.println("Confirm Alert text: " + alert3.getText());
+            alert3.dismiss();   // Cancel'a basmak için
+            System.out.println("Cancel seçildi");
+            Thread.sleep(1000);
+
+            // 4️⃣ Prompt Alert
+            System.out.println("=== Prompt Alert Test ===");
+            driver.findElement(By.id("promtButton")).click();
+
+            Alert alert4 = wait.until(ExpectedConditions.alertIsPresent());
+            System.out.println("Prompt text: " + alert4.getText());
+            alert4.sendKeys("Gili Test");
+            alert4.accept();
+            Thread.sleep(1000);
+
+        } catch (Exception e) {
+            System.out.println("Hata oluştu: " + e.getMessage());
+        }
+    }
+
 
 
 
