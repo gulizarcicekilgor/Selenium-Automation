@@ -83,9 +83,19 @@ public class TestNG {
         driver.get("https://demoqa.com/frames");
         driver.switchTo().frame("frame1");
 
-        String pragraph = driver.findElement(By.id("sampleHeading")).getText();
-        System.out.println(pragraph);
+        WebElement heading = driver.findElement(By.id("sampleHeading"));
+        String text = heading.getText();
+        System.out.println(text);
 
+        driver.switchTo().parentFrame();
+        List<WebElement> elementList = driver.findElements(By.cssSelector("div[id='framesWrapper'] div"));
+        String paragraph = elementList.get(0).getText();
+        System.out.println(paragraph);
 
+        driver.switchTo().frame("frame2");
+
+        WebElement heading2 = driver.findElement(By.id("sampleHeading"));
+        String text2 = heading2.getText();
+        System.out.println(text2);
     }
 }
