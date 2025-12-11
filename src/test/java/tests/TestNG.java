@@ -5,6 +5,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.annotations.*; // 🔴 TestNG
 
 import java.time.Duration;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class TestNG {
 
-    WebDriver driver; // 🔴 instance variable
+    WebDriver driver; //  instance variable
 
     @BeforeClass
     public void setUp() {
@@ -97,5 +98,69 @@ public class TestNG {
         WebElement heading2 = driver.findElement(By.id("sampleHeading"));
         String text2 = heading2.getText();
         System.out.println(text2);
+    }
+    @Test
+    public void NestedFrame() throws InterruptedException {
+        //for ads
+        driver.get("https://demoqa.com/nestedframes");
+        Thread.sleep(5000);
+        WebElement adFrame = driver.findElement(By.cssSelector("iframe[title='3rd party ad content']"));
+        driver.switchTo().frame(adFrame);
+
+        WebElement closeBtn = driver.findElement(By.id("cbb"));
+        closeBtn.click();
+
+    }
+    @Test
+    public void NestedFrame2()  {
+        driver.get("https://demoqa.com/nestedframes");
+        driver.switchTo().frame("frame1");
+        WebElement body = driver.findElement(By.tagName("body"));
+        System.out.println(body.getText());
+        driver.switchTo().frame(0);
+        WebElement p = driver.findElement(By.tagName("p"));
+        System.out.println(p.getText());
+
+        driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
+        WebElement parentText = driver.findElement(By.cssSelector("#framesWrapper > div:first-of-type"));
+        System.out.println(parentText.getText());
+
+    }
+    @Test
+    public void Accordians() throws InterruptedException {
+        //sayfa ik açıldığında ilk accordian açık mı kontrolü
+        driver.get("https://demoqa.com/accordian");
+        WebElement accordianfirst = driver.findElement(By.id("section1Content")).findElement(By.xpath("./parent::div"));
+        String classValue = accordianfirst.getAttribute("class");
+        Assert.assertTrue(classValue.contains("show"),"First accordian should be open by default");
+       // System.out.println(classValue);
+
+        /*
+        //collapsing anını yaklamak için
+        driver.findElement(By.id("section1Heading")).click();
+        classValue = accordianfirst.getAttribute("class");
+        System.out.println(classValue); */
+
+        // refreh yapınca acordion açık mı kontrolü
+        driver.navigate().refresh();
+        WebElement afterRefreh = driver.findElement(By.id("section1Content")).findElement(By.xpath("./parent::div"));
+        //System.out.println(afterRefreh.getAttribute("class"));
+        Assert.assertTrue(classValue.contains("show"),"After refresh, accordian should be open by default");
+        //System.out.println(classValue);
+
+
+        //ikinci accordiana tıklayınca birinci kapanıyor mu
+        driver.findElement(By.id("section2Heading")).click();
+        Thread.sleep(5000);
+        WebElement firstCollapse = driver.findElement(By.id("section1Content")).findElement(By.xpath("./parent::div"));
+
+        WebElement secondCollapse = driver.findElement(By.id("section2Content")).findElement(By.xpath("./parent::div"));
+
+        //1. kapalı olmalı
+        Assert.assertFalse(firstCollapse.getAttribute("class").contains("show"), "First accordian should be closed");
+        //ikinci açık olmalı
+        Assert.assertTrue(secondCollapse.getAttribute("class").contains("show"), "Second accordian should be open");
+
     }
 }
