@@ -163,4 +163,46 @@ public class TestNG {
         Assert.assertTrue(secondCollapse.getAttribute("class").contains("show"), "Second accordian should be open");
 
     }
+    @Test
+    public void AutoComplate() throws InterruptedException {
+        driver.get("https://demoqa.com/auto-complete");
+        //Yazdıkça DOM değişiyor
+        //Elementler sonradan oluşuyor
+        //Thread.sleep yerine explicit wait şart
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement input =driver.findElement( By.id("autoCompleteSingleInput"));
+        input.clear();
+        input.sendKeys("R");
+
+        List<WebElement> suggestions = wait.until(
+                ExpectedConditions.visibilityOfAllElementsLocatedBy(
+                        By.cssSelector("div.auto-complete__option")
+                )
+        );
+
+        boolean REDSelected = false;
+        for (WebElement suggestion : suggestions) {
+            String text = suggestion.getText();
+            System.out.println(text);
+
+            Assert.assertTrue(text.toLowerCase().contains("r"),"Suggestiın has not 'R' " + text);
+            if(suggestion.getText().equalsIgnoreCase("Red")){
+                suggestion.click();
+                REDSelected = true;
+                break;
+            }
+            //Red gerçekten seçildi mi
+            Assert.assertTrue(REDSelected, "Red option does not exist in dropdown");
+            //input alanına dolduruldu mu
+            String selectedValue  = input.getAttribute("value");
+            Assert.assertTrue(selectedValue.equalsIgnoreCase("Red"),"Selected value is not 'Red'");
+
+
+        }
+
+    }
+    @Test
+    public void MultipleAutoComplete() {
+    }
 }
