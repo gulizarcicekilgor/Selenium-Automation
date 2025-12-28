@@ -203,6 +203,71 @@ public class TestNG {
 
     }
     @Test
-    public void MultipleAutoComplete() {
+    public void MultipleAutoComplete() throws InterruptedException {
+        driver.get("https://demoqa.com/auto-complete");
+        WebElement input =driver.findElement( By.id("autoCompleteMultipleInput"));
+        input.sendKeys("R");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        List<WebElement> suggestions = wait.until(
+                ExpectedConditions.visibilityOfAllElementsLocatedBy(
+                        By.cssSelector("div.auto-complete__option")
+                )
+        );
+        for (WebElement suggestion : suggestions) {
+            suggestions.get(0).click();
+            break;
+            //String text = suggestion.getText();
+            //System.out.println(text);
+        }
+
+        driver.findElement( By.id("autoCompleteMultipleInput")).sendKeys("R");
+        List<WebElement> suggestions2 = wait.until(
+                ExpectedConditions.visibilityOfAllElementsLocatedBy(
+                        By.cssSelector("div.auto-complete__option")
+                )
+        );
+        for (WebElement suggestion : suggestions2) {
+            if(!(suggestion.getText().equalsIgnoreCase("RED")))
+            {
+                suggestions2.get(0).click();
+                break;
+            }
+            //if(!(suggestion.getAttribute("value").equalsIgnoreCase("Red"))){
+
+
+        }
+
+
+
+
+
+
     }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
