@@ -4,6 +4,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.*; // 🔴 TestNG
@@ -204,45 +205,82 @@ public class TestNG {
     }
     @Test
     public void MultipleAutoComplete() throws InterruptedException {
+
         driver.get("https://demoqa.com/auto-complete");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        //Input alanını bul ve R yaz
         WebElement input =driver.findElement( By.id("autoCompleteMultipleInput"));
         input.sendKeys("R");
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        // 3️⃣ Suggestion listesinin gelmesini bekle
         List<WebElement> suggestions = wait.until(
                 ExpectedConditions.visibilityOfAllElementsLocatedBy(
                         By.cssSelector("div.auto-complete__option")
                 )
         );
-        for (WebElement suggestion : suggestions) {
-            suggestions.get(0).click();
-            break;
-            //String text = suggestion.getText();
-            //System.out.println(text);
-        }
 
-        driver.findElement( By.id("autoCompleteMultipleInput")).sendKeys("R");
-        List<WebElement> suggestions2 = wait.until(
+        // ✅ Assertion 1: En az 1 suggestion gelmiş mi?
+        Assert.assertTrue(suggestions.size()>0, "Suggestions list is empty");
+
+        // 4️⃣ Select the first item.(ex: Red)
+        String selectedValue  = suggestions.get(0).getText();
+        suggestions.get(0).click();
+
+        //Write R again
+        input.sendKeys("R");
+
+        List<WebElement> suggestionsAfterSelect = wait.until(
                 ExpectedConditions.visibilityOfAllElementsLocatedBy(
                         By.cssSelector("div.auto-complete__option")
                 )
         );
-        for (WebElement suggestion : suggestions2) {
-            if(!(suggestion.getText().equalsIgnoreCase("RED")))
+
+        // 6️⃣ The Selected option should no be listed again
+        for (WebElement suggestion : suggestionsAfterSelect) {
+            Assert.assertNotEquals(suggestion.getText(),selectedValue,"Selected value reappears in the list ");
+        }
+    }
+
+    @Test
+    public void DatePicker(){
+        driver.get("https://demoqa.com/date-picker");
+        WebElement datePicker = driver.findElement(By.id("datePickerMonthYearInput"));
+        datePicker.click();
+
+        WebElement month = driver.findElement(By.className("react-datepicker__month-select"));
+        Select monthSelect = new Select(month);
+        monthSelect.selectByVisibleText("October");
+
+        WebElement year = driver.findElement(By.className("react-datepicker__year-select"));
+        Select yearSelect = new Select(year);
+        yearSelect.selectByVisibleText("1995");
+
+        List<WebElement> days =  driver.findElements(
+                By.cssSelector(
+                        "div.react-datepicker__day:not(.react-datepicker__day--outside-month)")
+        );
+
+        for(WebElement day : days){
+            if(day.getText().equals("10"))
             {
-                suggestions2.get(0).click();
+                day.click();
                 break;
             }
-            //if(!(suggestion.getAttribute("value").equalsIgnoreCase("Red"))){
-
 
         }
-
+        WebElement dateInput = driver.findElement(By.id("datePickerMonthYearInput"));
+        String ActualDate = dateInput.getAttribute("value");
+        String ExpectedDate = "10/10/1995";
+        //mesaj test pail olduğunda gorunur
+        Assert.assertEquals(ActualDate,ExpectedDate,"Selected date is not correct");
 
 
 
 
 
     }
+
 
 }
 
